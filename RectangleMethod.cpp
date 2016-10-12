@@ -1,19 +1,18 @@
 #include<stdio.h>
 #include<math.h>
 
+#define A 0.0
+#define B 1.57
+#define EPSILON 0.000001
+
 double CompositeMethod(double a, double b, double epsilon);
-double RectangleMethod(double f, double a, double b);
+double RectangleMethod(double f, double h);
 int RungesRule(double I2n, double In, double epsilon);
 double f(double x);
 
 int main(void)
 {
-	double a, b;
-    
-    a = 0;
-    b = 1.5;
-	
-	printf("%lf\n", CompositeMethod(a, b, 0.000001));
+	printf("%lf\n", CompositeMethod(A, B, EPSILON));
 	
 	return 0;
 }
@@ -21,34 +20,27 @@ int main(void)
 double CompositeMethod(double a, double b, double epsilon)
 {
     int n;
-    double In, I2n, h, xi, xj;
+    double In, I2n, h, xi;
     
-    In = RectangleMethod(f((a+b)/2.0), a, b);
-    I2n = RectangleMethod(f((3.0*a+b)/4.0), a, (a+b)/2.0) + 
-        RectangleMethod(f((a+3.0*b)/2.0), (a+b)/2.0, b);
-    n = 4;
-    while(!RungesRule(I2n, In, epsilon))
+    In = RectangleMethod(f((a+b)/2.0), b - a);
+    I2n = RectangleMethod(f((3.0*a+b)/4.0), (b - a)/2.0) + 
+        RectangleMethod(f((a+3.0*b)/2.0), (b - a)/2.0);
+    
+    for(n = 4; !RungesRule(I2n, In, epsilon); n *= 2)
     {
         h = (b - a)/n;
-        xj = xi = a;
+        xi = a;
         In = I2n;
-        I2n = 0.0;
-        while(b - xj > 0)
-        {
-            xi = xj;
-            xj = xi + h;
-            I2n += RectangleMethod(f((xi+xj)/2.0), xi, xj);
-        }
-        
-        n *= 2;
+        for(I2n = 0.0; b - xi - h > 0; xi += h)
+            I2n += RectangleMethod(f(xi + h/2.0), h);
     }
     
     return I2n;
 }
 
-double RectangleMethod(double f, double a, double b)
+double RectangleMethod(double f, double h)
 {
-    return f*(b - a);
+    return f*h;
 }
 
 int RungesRule(double I2n, double In, double epsilon)
