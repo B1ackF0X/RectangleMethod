@@ -4,6 +4,7 @@
 #define A 0.0
 #define B 1.57
 #define EPSILON 0.000001
+#define FUNCTION sin(x)
 
 double CompositeMethod(double a, double b, double epsilon);
 double RectangleMethod(double f, double h);
@@ -53,5 +54,5 @@ int RungesRule(double I2n, double In, double epsilon)
 
 double f(double x)
 {
-    return sin(x);
+    return FUNCTION;
 }
